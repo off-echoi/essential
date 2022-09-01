@@ -8,7 +8,7 @@ const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id/json';
 
 const store = {
   currentPage: 1,
-  pageView: 9,
+  pageView: 4,
 };
 
 function getData(url) {
@@ -30,8 +30,8 @@ function newsFeed() {
         <section class="flex justify-between items-center py-6">
           <h1 class="font-extrabold">Haker News</h1>
           <div class="items-center justify-end">
-            <a href="#/page/{{__prev_page__}}" class="text-gray-500">PREV</a>
-            <a href="#/page/{{__next_page__}}" class="text-gray-500">NEXT</a>
+            <a href="#/page/{{__prev_page__}}" class="text-gray-500">Prev</a>
+            <a href="#/page/{{__next_page__}}" class="text-gray-500">Next</a>
           </div>
         </section>
       </header>
@@ -67,11 +67,9 @@ function newsFeed() {
 
   template = template.replace('{{__news_feed__}}', newsList.join(''));
   template = template.replace('{{__prev_page__}}', store.currentPage > 1 ? store.currentPage - 1 : 1);
-  // FIXME: 다음 페이지 로직 고쳐야 함
-  // TODO:
   template = template.replace(
     '{{__next_page__}}',
-    (newsFeed.length - store.pageView * store.currentPage) % store.pageView > 0 ? store.currentPage + 1 : store.currentPage
+    newsFeed.length - store.pageView * store.currentPage > 0 ? store.currentPage + 1 : store.currentPage
   );
   container.innerHTML = template;
 }

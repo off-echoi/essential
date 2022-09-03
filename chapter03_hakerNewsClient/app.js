@@ -8,6 +8,7 @@ const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id/json';
 
 const store = {
   currentPage: 1,
+  feeds: [],
   pageView: 4,
 };
 
@@ -18,9 +19,15 @@ function getData(url) {
   return JSON.parse(ajax.response);
 }
 
-function newsFeed() {
-  const newsFeed = getData(NEWS_URL);
+function makeFeeds(feeds) {
+  for (let i = 0; i < feeds.length; i++) {
+    feeds[i].read = false;
+  }
+  return feeds;
+}
 
+function newsFeed() {
+  let newsFeed = store.feeds;
   const newsList = [];
 
   let template = `
@@ -42,10 +49,13 @@ function newsFeed() {
   </div>
   `;
 
+  if (newsFeed.length === 0) {
+    newsFeed = store.feeds = makeFeeds(getData(NEWS_URL));
+  }
   for (let i = (store.currentPage - 1) * store.pageView; i < store.currentPage * store.pageView; i++) {
     if (!newsFeed[i]) break;
     newsList.push(`
-      <li class="p-6 bg-white mt-6 rounded-lg shadow-md tranition-colors duration-500 hover:bg-green-100">
+      <li class="p-6 ${newsFeed[i].read ? 'bg-gray-400' : 'bg-white'} mt-6 rounded-lg shadow-md tranition-colors duration-500 hover:bg-green-100">
       <section class="flex">
         <article class="flex-auto">
           <a href="#/show/${newsFeed[i].id}">${newsFeed[i].title}</a>
@@ -69,6 +79,7 @@ function newsFeed() {
   template = template.replace('{{__prev_page__}}', store.currentPage > 1 ? store.currentPage - 1 : 1);
   template = template.replace(
     '{{__next_page__}}',
+    // store.currentPage + 1
     newsFeed.length - store.pageView * store.currentPage > 0 ? store.currentPage + 1 : store.currentPage
   );
   container.innerHTML = template;
@@ -102,6 +113,11 @@ function newsDetail() {
   </div>
 </div>
   `;
+  for (let i = 0; i < store.feeds.length; i++) {
+    if (store.feeds[i].id === Number(id)) {
+      store.feeds[i].read = true;
+    }
+  }
 
   function makeComments(comments, called = 0) {
     const commentString = [];

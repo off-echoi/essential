@@ -79,13 +79,54 @@ function newsDetail() {
 
   const newsContent = getData(CONTENT_URL.replace('@id', id));
 
+  let template = `
+<div class="bg-gray-600 min-h-screen pd-8">
+  <div class="bg-white text-xl">
+    <div class="mx-auto px-4">
+      <section class="flex justify-between items-center py-6">
+        <header class="flex justify-start">
+          <h1 class="font-extrabold">Heaker News</h1>
+        </header>
+        <article class="items-center justify-end">
+          <a href="#/page/${store.currentPage}" class="text-gray-500">
+            <i class="fa fa-times"></i>
+          </a>
+        </article>
+      </section>
+    </div>
+  </div>
+  <div class="h-full border rounded-xl bg-white m-6 p-4">
+    <h2>${newsContent.title}</h2>
+    <section class="text-gray-400 h-20">${newsContent.content}</section>
+    {{__comments__}}
+  </div>
+</div>
+  `;
+
+  function makeComments(comments, called = 0) {
+    const commentString = [];
+    for (let i = 0; i < comments.length; i++) {
+      commentString.push(`
+      <div style="padding-left: ${called * 30}px;" class="mt-4">
+        <div class="text-gray-400">
+          <i class="fa fa-sort-up mr-2"></i>
+          <strong>${comments[i].user}</strong> ${comments[i].time_ago}
+        </div>
+        <p class="text-gray-700">${comments[i].content}</p>
+       </div>
+      `);
+
+      if (comments[i].comments.length > 0) {
+        commentString.push(makeComments(comments[i].comments, called + 1));
+      }
+    }
+
+    return commentString.join('');
+  }
+
   container.innerHTML = '';
 
-  container.innerHTML = ` 
-  <h1>${newsContent.title}</h1>
-  <div>
-    <a href="#/page/${store.currentPage}">목록으로</a>
-  </div>`;
+  container.innerHTML = template.replace('{{__comments__}}', makeComments(newsContent.comments));
 }
 
 function router() {

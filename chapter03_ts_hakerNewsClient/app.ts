@@ -1,39 +1,40 @@
-type Store = {
+interface Store {
   currentPage: number;
   feeds: NewsFeed[];
   pageView: number;
-};
+}
 
-type News = {
-  id: number;
-  time: number;
-  time_ago: string;
-  title: string;
-  url: string;
-  user: string;
-  type: string;
-};
-type NewsFeed = News & {
-  comments_count: number;
-  domain: string;
-  points: number;
+interface News {
+  readonly id: number;
+  readonly time: number;
+  readonly time_ago: string;
+  readonly title: string;
+  readonly url: string;
+  readonly user: string;
+  readonly type: string;
+}
+interface NewsFeed extends News {
+  readonly comments_count: number;
+  readonly domain: string;
+  readonly points: number;
   read?: boolean;
-};
+}
 
-type NewsDetail = News & {
-  comments: NewsComment[];
-  comments_count: number;
-  content: string;
-  domain: string;
-  points: number;
-};
+interface NewsDetail extends News {
+  readonly comments: NewsComment[];
+  readonly comments_count: number;
+  readonly content: string;
+  readonly domain: string;
+  readonly points: number;
+}
 
-type NewsComment = News & {
-  content: string;
-  comments: [];
-  comments_count: number;
-  level: number;
-};
+interface NewsComment extends News {
+  readonly content: string;
+  readonly comments: [];
+  readonly comments_count: number;
+  readonly level: number;
+}
+
 const ajax: XMLHttpRequest = new XMLHttpRequest();
 
 const container: Element | null = document.querySelector('#root');
